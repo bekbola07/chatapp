@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="eng">
+<head>
+    <meta charset="UTF-8">
+    <title>User List Page</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row bg-primary text-white">
+        <div class="col-9">
+            <h2>User List</h2>
+        </div>
+        <div sec:authorize="isAnonymous" class="col-3 d-flex justify-content-end align-items-center">
+            <a class="btn btn-light mr-2" href="/auth/register">Register</a>
+            <a class="btn btn-light" href="/auth/login">Login</a>
+        </div>
+        <div sec:authorize="isAuthenticated" class="col-3 d-flex justify-content-end align-items-center">
+            <a class="btn btn-light mr-2" href="/auth/logout">Log out</a>
+            <a class="btn btn-light" href="/" th:text="${#authentication.name}">user</a>
+            <img th:if="${#authentication.principal.attachment}" th:src="@{'/file/' + ${#authentication.principal.attachment.id}}" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;" class="mr-2">
+            <img th:unless="${#authentication.principal.attachment}" src="/image/img.png" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;" class="mr-2">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 bg-light p-4">
+            <h3>User List</h3>
+            <ul class="list-group">
+                <li th:each="user : ${users}" class="list-group-item">
+                    <a th:href="@{'/?id=' + ${user.id}}">
+                        <img th:if="${user.attachment}" th:src="@{'/file/' + ${user.attachment.id}}" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;">
+                        <img th:unless="${user.attachment}" src="/image/img.png" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;">
+                        <span th:text="${user.username}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-9 p-4">
+            <div th:if="${chosenUser != null}" class="mt-4">
+                <img th:if="${chosenUser.attachment}" th:src="@{'/file/' + ${chosenUser.attachment.id}}" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;" class="mr-2">
+                <img th:unless="${chosenUser.attachment}" src="/image/img.png" alt="User Image" style="width: 50px; height: 50px; border-radius: 50%;" class="mr-2">
+                <span th:text="${chosenUser.username}"></span>
+            </div>
+            <div th:if="${chosenUser != null}" class="mt-4">
+                <h4>Messages</h4>
+                <div th:each="message : ${messages}" class="card mb-3">
+                    <div class="card-body">
+                        <div th:if="${message.from.id == chosenUser.id}" class="text-left">
+                            <strong th:text="${message.from.username}">From:</strong>
+                            <p class="card-text" th:text="${message.body}"></p>
+                            <p class="card-text text-muted" th:text="${message.send_at}"></p>
+                            <div th:if="${message.attachment}">
+                                <img th:src="@{'/file/' + ${message.attachment.id}}" alt="Attachment" style="width: 200px; height: 200px;">
+                            </div>
+                        </div>
+                        <div th:unless="${message.from.id == chosenUser.id}" class="text-right">
+                            <strong th:text="${message.from.username}">From:</strong>
+                            <p class="card-text" th:text="${message.body}"></p>
+                            <p class="card-text text-muted" th:text="${message.send_at}"></p>
+                            <div th:if="${message.attachment}">
+                                <img th:src="@{'/file/' + ${message.attachment.id}}" alt="Attachment" style="width: 200px; height: 200px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:unless="${chosenUser != null}">
+                <p>Select a user from the sidebar to view their information.</p>
+            </div>
+            <div class="mt-4" th:if="${chosenUser}">
+                <form th:action="@{'/message/send'}" method="post" enctype="multipart/form-data" class="row">
+                    <div class="col-md-2 mb-3">
+                        <input type="file" class="form-control-file" id="attachment" name="attachment">
+                    </div>
+                    <div class="col-md-8 mb-3">
+                        <label for="messageBody"></label>
+                        <textarea placeholder="Write message" class="form-control" id="messageBody" name="body" rows="1" required></textarea>
+                    </div>
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
+                        <input type="hidden" name="to" th:value="${chosenUser != null ? chosenUser.id : ''}">
+                        <button type="submit" class="btn btn-primary btn-block">Send</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

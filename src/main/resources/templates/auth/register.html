@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <style>
+        .error {
+            color: red;
+            display: none;
+        }
+        #userImage {
+            display: block;
+            margin: 0 auto;
+            width: 150px; /* Adjust as needed */
+            height: 150px; /* Adjust as needed */
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img id="userImage" src="/image/img.png" alt="User Image">
+
+    <h2 class="mt-5">Register</h2>
+    <form id="registerForm" class="needs-validation" novalidate action="/auth/register" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="userImage">User Image</label>
+            <input type="file" class="form-control-file" name="userImage1" id="userImageInput" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+            <div class="invalid-feedback">
+                Please enter a username.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            <div class="invalid-feedback">
+                Please enter a password.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+            <div class="invalid-feedback">
+                Please confirm your password.
+            </div>
+            <div id="passwordError" class="error">Passwords do not match.</div>
+        </div>
+        <!-- Input for user image -->
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+<script>
+    (function() {
+        'use strict';
+
+        window.addEventListener('load', function() {
+            let form = document.getElementById('registerForm');
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+
+                let password = document.getElementById('password').value;
+                let confirmPassword = document.getElementById('confirmPassword').value;
+                let passwordError = document.getElementById('passwordError');
+
+                if (password !== confirmPassword) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    passwordError.style.display = 'block';
+                } else {
+                    passwordError.style.display = 'none';
+                }
+            }, false);
+
+            // Handle user image selection
+            let userImageInput = document.getElementById('userImageInput');
+            let userImage = document.getElementById('userImage');
+
+            userImageInput.addEventListener('change', function(event) {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        userImage.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }, false);
+    })();
+</script>
+</body>
+</html>
