@@ -28,7 +28,7 @@ public class MessageController {
     private final MessageRepo messageRepo;
     @PostMapping("/send")
     public String sendMessage(@AuthenticationPrincipal UserDetails currentUser,
-                              @RequestParam("to") Integer toUserId,
+                              @RequestParam(value = "to", required = false) Integer toUserId,
                               @RequestParam("body") String body,
                               @RequestParam("attachment") MultipartFile attachment,
                               Model model) {
